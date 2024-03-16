@@ -20,6 +20,45 @@ static int foo;
 #define MAGIC ((void*)&wf_stats)
 #define BADMAGIC ((void*)&foo)
 
+/* Waveform scaling
+ *
+ * Apply linear scaling to waveform
+ *
+ * record(aSub, "$(N)") {
+ *   field(SNAM, "WF Scale")
+ *   field(FTA , "LONG")
+ *   field(FTB , "DOUBLE")
+ *   field(FTC , "DOUBLE")
+ *   field(FTVA, "DOUBLE")
+ *   field(NOA , "128")
+ *   field(INPA, "Unscaled WF")
+ *   field(INPB, "Slope")
+ *   field(INPC, "Offset")
+ *   field(OUTA, "Scaled WF")
+ *   field(NOVA, "128")
+ * }
+ */
+static
+long wf_scale(aSubRecord *prec)
+{
+    const epicsInt32* inp = (const epicsInt32*)prec->a;
+    epicsUInt32 inp_cnt = prec->nea;
+    double scale = *(double*)prec->b;
+    double offset = *(double*)prec->c;
+    double *out = (double*)prec->vala;
+    epicsUInt32 cnt = prec->nova;
+    epicsUInt32 i;
+
+    if(cnt > inp_cnt)
+        cnt = inp_cnt;
+
+    for(i=0; i<cnt; i++) {
+        out[i] = scale*(double)inp[i] + offset;
+    }
+    prec->neva = cnt;
+    return 0;
+}
+
 /* Waveform statistics
  *
  * Computes mean and std of the (subset of)
@@ -188,5 +227,6 @@ long wf_timebase(aSubRecord *prec)
     return 0;
 }
 
+epicsRegisterFunction(wf_scale);
 epicsRegisterFunction(wf_stats);
 epicsRegisterFunction(wf_timebase);

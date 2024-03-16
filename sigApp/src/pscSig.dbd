@@ -15,6 +15,9 @@ device(waveform, INST_IO, devWFFFTFScale, "PSC PSD fscale")
 device(waveform, INST_IO, devWFFFTFWindow, "PSC PSD window")
 registrar(fftcalcReg)
 
+# Linear scaling
+function(wf_scale)
+
 # Basic stats
 function(wf_stats)
 function(wf_timebase)
