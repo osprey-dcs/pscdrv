@@ -317,7 +317,7 @@ void PSCUDP::flushSend()
         timefprintf(stderr, "%s: flush %u -> %u\n",
                     name.c_str(), (unsigned)sendbuf.size(), (unsigned)txbuf.size());
 
-    if(txbuf.size() >= 64u)
+    if(txbuf.size() >= 256u)
         throw std::runtime_error("Sending message would exceed buffer");
 
     txbuf.splice(txbuf.end(),
@@ -337,7 +337,7 @@ void PSCUDP::flushSend()
 void PSCUDP::queueHeader(Block* blk, epicsUInt16 id, epicsUInt32 buflen)
 {
     // arbitrary limit on the number of queued packets
-    if(sendbuf.size()>=64u)
+    if(sendbuf.size()>=256u)
         throw std::runtime_error("UDP send queue limit exceeded");
 
     if(readybuf.empty()) {
