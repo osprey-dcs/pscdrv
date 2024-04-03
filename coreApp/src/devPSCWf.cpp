@@ -146,7 +146,7 @@ long read_wf_bytes(waveformRecord* prec)
             return 0;
         }
 
-        size_t len = priv->block->data.copyout(prec->bptr, priv->offset, prec->nelm);
+        size_t len = priv->block->data.copyout_bytes(prec->bptr, priv->offset, prec->nelm);
 
         prec->nord = len;
 

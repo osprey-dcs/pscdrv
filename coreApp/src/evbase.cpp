@@ -256,6 +256,13 @@ bool dbuffer::copyin(const void *buf, size_t offset, size_t len)
     return ptr.copy(len, const_cast<void*>(buf), false)==len;
 }
 
+size_t dbuffer::copyout_bytes(void *dest, size_t offset, size_t nbytes) const
+{
+    stride_ptr ptr(*this);
+    ptr.copy(offset, 0u, true); // skip
+    return ptr.copy(nbytes, dest, true);
+}
+
 size_t dbuffer::copyout_shape(void *rawdest, size_t ioffset, size_t esize, size_t iskip, size_t dskip, size_t ecount) const
 {
     const size_t total = size();

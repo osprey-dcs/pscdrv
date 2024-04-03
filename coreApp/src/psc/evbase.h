@@ -112,6 +112,14 @@ public:
     bool copyout(void *dest, size_t offset, size_t nbytes) const {
         return copyout_shape(dest, offset, nbytes, 0u, 0u, 1u)==1u;
     }
+    /** Copy out a variable number of contiguious bytes.
+     *
+     * @param dest Output pointer
+     * @param offset Input bytes to skip before first byte read
+     * @param nbytes Maximum number of byte to read.
+     * @return Number of bytes actually read
+     */
+    size_t copyout_bytes(void *dest, size_t offset, size_t nbytes) const;
     /** Copy out array.
      *
      * @param dest Output pointer
