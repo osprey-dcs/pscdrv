@@ -1,6 +1,6 @@
 name: PSC Driver
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 env:
   SETUP_PATH: .ci-local
@@ -39,7 +39,7 @@ jobs:
             base: "3.15"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
@@ -50,8 +50,12 @@ jobs:
     - name: Brew
       if: runner.os == 'macOS'
       run: |
+        brew config
         brew install libevent
         brew info libevent
+        ls /opt/homebrew/include/event2/event.h
+        echo "CPATH=/opt/homebrew/include" >> $GITHUB_ENV
+        echo "LIBRARY_PATH=/opt/homebrew/lib" >> $GITHUB_ENV
 
     - name: Prepare and compile dependencies
       run: python .ci/cue.py prepare
