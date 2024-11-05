@@ -73,7 +73,10 @@ public:
 
     inline pointer allocate(size_type n, const void * =0)
     {
-        return (T*)fftw_malloc(n*sizeof(T));
+        void* ret = fftw_malloc(n*sizeof(T));
+        if(!ret && n)
+            throw std::bad_alloc();
+        return (T*)ret;
     }
 
     inline void deallocate(pointer p, size_type n)
