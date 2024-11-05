@@ -36,6 +36,10 @@ endif
 pscUDPFast_LIBS += pscCore
 pscUDPFast_LIBS += $(EPICS_BASE_IOC_LIBS)
 
+pscUDPFast_SYS_LIBS += event_core event_extra
+pscUDPFast_SYS_LIBS_DEFAULT = event_pthreads
+pscUDPFast_SYS_LIBS_WIN32 =
+
 #===========================
 
 include $(TOP)/configure/RULES
