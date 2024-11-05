@@ -47,16 +47,15 @@ struct PTimer {
 
 // STL compatible allocator which uses fftw_alloc_*() to ensure aligned arrays
 template<typename T>
-class FFTWAllocator : public std::allocator<T>
+class FFTWAllocator
 {
 public:
-#define PTYPE(P) typedef typename std::allocator<T>::P P
-    PTYPE(pointer);
-    PTYPE(const_pointer);
-    PTYPE(reference);
-    PTYPE(const_reference);
-    PTYPE(size_type);
-#undef PTYPE
+    typedef T value_type;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef size_t size_type;
 
     inline FFTWAllocator() {}
 
@@ -79,10 +78,14 @@ public:
         return (T*)ret;
     }
 
-    inline void deallocate(pointer p, size_type n)
+    inline void deallocate(pointer p, size_type)
     {
         fftw_free(p);
     }
+
+    // we are state-less
+    inline bool operator==(const FFTWAllocator&) const { return true; }
+    inline bool operator!=(const FFTWAllocator&) const { return false; }
 };
 
 template<>
