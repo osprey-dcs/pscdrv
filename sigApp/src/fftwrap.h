@@ -14,6 +14,7 @@
 
 #include <fftw3.h>
 
+#include <epicsAssert.h>
 #include <errlog.h>
 #include <dbScan.h>
 
@@ -45,6 +46,12 @@ struct PTimer {
     }
 };
 
+// because vector<double[2]> doesn't work with clang libstd, encapsulate.
+struct fftw_complex_storage {
+    fftw_complex store;
+};
+STATIC_ASSERT(sizeof(fftw_complex_storage)==sizeof(fftw_complex));
+
 // STL compatible allocator which uses fftw_alloc_*() to ensure aligned arrays
 template<typename T>
 class FFTWAllocator
@@ -65,7 +72,8 @@ public:
     inline const_pointer address(const_reference x) const { return &x; }
     inline size_type max_size()const {return ((size_t)-1)/sizeof(T);}
 
-    inline void construct(pointer p, const_reference val);
+    inline void construct(pointer p, const_reference val)
+    {::new((void*)p) T(val);}
 
     inline void destroy(pointer p)
     {p->~T();}
@@ -87,25 +95,6 @@ public:
     inline bool operator==(const FFTWAllocator&) const { return true; }
     inline bool operator!=(const FFTWAllocator&) const { return false; }
 };
-
-template<>
-inline void FFTWAllocator<double>::construct(pointer p, const_reference val)
-{::new((void*)p) double(val);}
-
-template<>
-inline void FFTWAllocator<fftw_complex>::construct(pointer p, const_reference val)
-{
-    (*p)[0] = val[0];
-    (*p)[1] = val[1];
-}
-template<>
-
-inline void FFTWAllocator<double>::destroy(pointer p)
-{}
-
-template<>
-inline void FFTWAllocator<fftw_complex>::destroy(pointer p)
-{}
 
 // Helper to ensure that plans are destroyed
 class Plan
@@ -140,7 +129,7 @@ struct PSDCalc
     std::vector<double, FFTWAllocator<double> > input, output;
 
     std::vector<Plan> plans;
-    typedef std::vector<fftw_complex, FFTWAllocator<fftw_complex> > middle_inner;
+    typedef std::vector<fftw_complex_storage, FFTWAllocator<fftw_complex_storage> > middle_inner;
     std::vector<middle_inner> middle;
 
     std::vector<double> fscale;

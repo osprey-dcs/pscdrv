@@ -159,8 +159,9 @@ void PSDCalc::calculate()
 
         for(size_t i=0; i<nbins; i++)
         {
+            fftw_complex *data = reinterpret_cast<fftw_complex*>(middle[i].data());
             // FFTW_EXHAUSTIVE > FFTW_PATIENT > FFTW_MEASURE > FFTW_ESTIMATE
-            plans[i] = fftw_plan_dft_r2c_1d(ntime, &input[i*ntime], middle[i].data(), FFTW_MEASURE);
+            plans[i] = fftw_plan_dft_r2c_1d(ntime, &input[i*ntime], data, FFTW_MEASURE);
         }
 
         replan = false;
@@ -182,7 +183,7 @@ void PSDCalc::calculate()
         double *out=&output[0];
         // sum by frequency for each bin
         for(size_t i=0; i<nbins; i++) {
-            fftw_complex *mid=&middle[i][0];
+            fftw_complex *mid=reinterpret_cast<fftw_complex*>(&middle[i][0]);
             for(size_t j=1; j<nfreq; j++) {
                 fftw_complex& temp = mid[j];
                 // output[j] += temp**2
