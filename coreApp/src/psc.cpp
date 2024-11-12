@@ -361,10 +361,10 @@ void PSC::report(int lvl)
     }
 }
 
-void PSC::queueHeader(Block* blk, epicsUInt16 id, epicsUInt32 buflen)
+bool PSC::queueHeader(Block* blk, epicsUInt16 id, epicsUInt32 buflen)
 {
     if(!connected)
-        return;
+        return false;
 
     if(blk->queued)
         throw recAlarm();
@@ -388,6 +388,7 @@ void PSC::queueHeader(Block* blk, epicsUInt16 id, epicsUInt32 buflen)
 
     // calling evbuffer_expand should ensure the adds never fails
     assert(!err);
+    return true;
 }
 
 /* add a new message to the send queue */
@@ -399,7 +400,8 @@ void PSC::queueSend(epicsUInt16 id, const void* buf, epicsUInt32 buflen)
 
 void PSC::queueSend(Block* blk, const dbuffer& buf)
 {
-    queueHeader(blk, blk->code, buf.size());
+    if(!queueHeader(blk, blk->code, buf.size()))
+        return;
     buf.copyout(sendbuf);
 
     blk->queued = true;
@@ -412,7 +414,8 @@ void PSC::queueSend(Block* blk, const dbuffer& buf)
 
 void PSC::queueSend(Block* blk, const void* buf, epicsUInt32 buflen)
 {
-    queueHeader(blk, blk->code, buflen);
+    if(!queueHeader(blk, blk->code, buflen))
+        return;
 
     int err = evbuffer_add(sendbuf, buf, buflen);
 

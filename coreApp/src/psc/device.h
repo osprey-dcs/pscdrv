@@ -237,7 +237,7 @@ public:
     virtual void report(int lvl) override;
 
 private:
-    void queueHeader(Block* blk, epicsUInt16 id, epicsUInt32 buflen);
+    bool queueHeader(Block* blk, epicsUInt16 id, epicsUInt32 buflen);
 public:
     virtual void queueSend(epicsUInt16, const void*, epicsUInt32) override final;
     virtual void queueSend(Block*, const dbuffer&) override final;
