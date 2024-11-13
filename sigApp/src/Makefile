@@ -13,6 +13,7 @@ DBD += pscSig.dbd
 
 pscSig_SRCS += asubwf.c
 
+pscSig_LIBS += pscCore
 pscSig_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 ifeq ($(USE_FFTW),YES)
