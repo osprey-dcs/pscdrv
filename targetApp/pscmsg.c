@@ -12,10 +12,10 @@
 #include <arpa/inet.h>
 
 #else /* BUILD_HOST */
-#include "lwip/opt.h"
-#include "lwip/sockets.h"
-#include "lwip/sys.h"
-#include "lwip/mem.h"
+#include <lwip/init.h>
+#include <lwip/sockets.h>
+#include <lwip/sys.h>
+#include <lwip/mem.h>
 
 #endif /* BUILD_HOST */
 

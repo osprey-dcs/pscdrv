@@ -7,6 +7,7 @@
 #ifndef PSCMSG_H
 #define PSCMSG_H
 
+#include <stdlib.h>
 #include <inttypes.h>
 
 /** Send exactly *buflen* bytes or fail.

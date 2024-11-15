@@ -23,7 +23,7 @@ typedef enum {
 /* Called when a client (dis)connects */
 typedef void (*psc_conn)(void *pvt, psc_event evt, psc_client *ckey);
 /* Called when a message is received */
-typedef void (*psc_recv)(void *pvt, uint16_t msgid, uint32_t msglen, void *msg);
+typedef void (*psc_recv)(void *pvt, psc_client *ckey, uint16_t msgid, uint32_t msglen, void *msg);
 
 typedef struct {
     void *pvt;

@@ -48,7 +48,7 @@ static void onconn(void *pvt, psc_event evt, psc_client *cli)
     psc_send_one(cli, 55, sizeof(clicount), &clicount);
 }
 
-static void rxmsg(void *pvt, uint16_t msgid, uint32_t msglen, void *msg)
+static void rxmsg(void *pvt, psc_client *cli, uint16_t msgid, uint32_t msglen, void *msg)
 {
     if(msgid!=99 || msglen!=4)
         psc_send(key, msgid+10, msglen, msg);

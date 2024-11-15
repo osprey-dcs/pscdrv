@@ -167,7 +167,7 @@ static void handle_client(void *raw)
         if(psc_recvmsg(C->sock, &msgid, C->rxbuf, &msglen, 0))
             break; /* read error */
 
-        (*C->PSC->conf->recv)(C->PSC->conf->pvt, msgid, msglen, C->rxbuf);
+        (*C->PSC->conf->recv)(C->PSC->conf->pvt, C, msgid, msglen, C->rxbuf);
     }
 
     /* patch outselves out of the client list */
