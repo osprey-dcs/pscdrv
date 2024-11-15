@@ -1,0 +1,14 @@
+# Building with LWIP circa 2.2.0
+
+```sh
+git clone \
+ --branch STABLE-2_2_0_RELEASE \
+ git://git.savannah.gnu.org/lwip.git
+
+cmake \
+ -S targetApp \
+ -B targetApp/build \
+ -DLWIP_DIR=$PWD/lwip
+
+cmake --build targetApp/build -v
+```
