@@ -79,7 +79,7 @@ template<> struct Int<8u> { typedef epicsUInt64 type; };
 template<typename T, size_t I=sizeof(T)>
 long read_wf_real(waveformRecord* prec)
 {
-    STATIC_ASSERT(I>0 && I<=sizeof(T));
+    STATIC_ASSERT(I>0 && I<=sizeof(T) && sizeof(T)<=sizeof(double));
     typedef typename detail::nswap<sizeof(T)>::utype store_type;
 
     if(!prec->dpvt)
@@ -113,15 +113,19 @@ long read_wf_real(waveformRecord* prec)
 
         // step backwards since we are expanding the used size of the array
         for(size_t i=nelem; i; i--) {
-            store_type raw = ntoh(out[i-1u]);
+            union {
+                store_type u;
+                T v;
+            } raw;
+            raw.u = ntoh(out[i-1u]);
             if(oskip) {
-                if(raw & sign_mask)
-                    raw |= extend;
+                if(raw.u & sign_mask)
+                    raw.u |= extend;
                 else
-                    raw &= ~extend;
+                    raw.u &= ~extend;
             }
 
-            ((double*)prec->bptr)[i-1u] = T(raw);
+            ((double*)prec->bptr)[i-1u] = raw.v;
         }
 
         prec->nord = nelem;

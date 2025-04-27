@@ -10,6 +10,7 @@
 #include <dbAccess.h>
 
 #include <psc/device.h>
+#include <psc/devcommon.h>
 
 namespace {
 struct TestMonitor {
@@ -28,13 +29,33 @@ struct TestMonitor {
     }
 };
 
+template<typename E, int dbf>
+void testBytes2F(const char* pv_rx)
+{
+    TestMonitor M(pv_rx);
+
+    const E expect[] = {1.1, 2.2};
+    union {
+        E f[NELEMENTS(expect)];
+        epicsUInt8 b[sizeof(f)];
+    } input;
+    for(size_t i=0; i<NELEMENTS(expect); i++)
+        input.f[i] = hton(expect[i]);
+
+    testdbPutArrFieldOk("tx:300:bytes", DBF_UCHAR, sizeof(input.b), input.b);
+
+    M.wait();
+
+    testdbGetArrFieldEqual(pv_rx, dbf, NELEMENTS(expect)+1, NELEMENTS(expect), expect);
+}
+
 } // namespace
 
 extern "C"
 void testIOC_registerRecordDeviceDriver(struct dbBase*);
 
 MAIN(testIOCUDP) {
-    testPlan(5);
+    testPlan(9);
     testdbPrepare();
 
     testdbReadDatabase("testIOC.dbd", NULL, NULL);
@@ -75,6 +96,8 @@ MAIN(testIOCUDP) {
             testdbGetArrFieldEqual("rx:200:a", DBF_LONG, NELEMENTS(expect_a)+1, NELEMENTS(expect_a), expect_a);
             testdbGetArrFieldEqual("rx:200:b", DBF_LONG, NELEMENTS(expect_b)+1, NELEMENTS(expect_b), expect_b);
         }
+        testBytes2F<float, DBF_FLOAT>("rx:300:f32");
+        testBytes2F<double, DBF_DOUBLE>("rx:300:f64");
 
         testIocShutdownOk();
     }

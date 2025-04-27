@@ -35,3 +35,30 @@ record(waveform, "rx:200:b") {
     field(FLNK, "rx:200:c")
     field(TPRO, "1")
 }
+
+record(waveform, "tx:300:bytes") {
+    field(FTVL, "UCHAR")
+    field(NELM, "32")
+    field(DTYP, "PSC Block I8 Out")
+    field(INP , "@sender 300")
+    field(FLNK, "tx:Send-Cmd")
+    field(TPRO, "1")
+}
+
+record(waveform, "rx:300:f32") {
+    field(FTVL, "DOUBLE")
+    field(NELM, "32")
+    field(DTYP, "PSC Block F32 In")
+    field(INP , "@receiver 300")
+    field(SCAN, "I/O Intr")
+    field(TPRO, "1")
+}
+
+record(waveform, "rx:300:f64") {
+    field(FTVL, "DOUBLE")
+    field(NELM, "32")
+    field(DTYP, "PSC Block F64 In")
+    field(INP , "@receiver 300")
+    field(SCAN, "I/O Intr")
+    field(TPRO, "1")
+}
