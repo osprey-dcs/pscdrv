@@ -45,7 +45,7 @@ PSC::PSC(const std::string &name,
     if(!eb)
         throw std::bad_alloc();
     reconnect_timer = evtimer_new(eb, &bev_reconnect, (void*)this);
-    dns = evdns_base_new(eb, 1);
+    dns = evdns_base_new(eb, EVDNS_BASE_INITIALIZE_NAMESERVERS|EVDNS_BASE_DISABLE_WHEN_INACTIVE);
     if(!reconnect_timer || !dns || !sendbuf)
         throw std::bad_alloc();
 }
