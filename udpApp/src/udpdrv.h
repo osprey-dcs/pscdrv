@@ -69,6 +69,7 @@ struct UDPFast : public PSCBase
     mutable epicsMutex shortLock;
     pkts_t shortBuf;
     size_t shortLimit;
+    bool shortLimitAutoExpand;
     IOSCANPVT shortFull;
 
     // rx worker pulls from socket buffer and pushes to 'pending'

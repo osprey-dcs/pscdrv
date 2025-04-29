@@ -152,6 +152,7 @@ UDPFast::UDPFast(const std::string& name,
     ,reopen(true)
     ,record(false)
     ,shortLimit(0u)
+    ,shortLimitAutoExpand(true)
     ,rxjob(this)
     ,rxworker(rxjob, "udpfrx", epicsThreadGetStackSize(epicsThreadStackBig), epicsThreadPriorityHigh+1)
     ,cachejob(this)
@@ -704,18 +705,20 @@ void UDPFast::cachefn()
             {
                 Guard S(shortLock);
                 const size_t istart = shortBuf.size();
-                if(const size_t nmove = std::min(inprog.size(), shortLimit - istart)) {
+                if(istart < shortLimit) {
+                    if(const size_t nmove = std::min(inprog.size(), shortLimit - istart)) {
 
-                    shortBuf.resize(istart + nmove);
+                        shortBuf.resize(istart + nmove);
 
-                    std::swap_ranges(shortBuf.begin()+istart,
-                                     shortBuf.end(),
-                                     inprog.begin());
-
-                    if(shortBuf.size() >= shortLimit) {
-                        // short filled.
-                        scanIoRequest(shortFull);
+                        std::swap_ranges(shortBuf.begin()+istart,
+                                         shortBuf.end(),
+                                         inprog.begin());
                     }
+                }
+
+                if(shortBuf.size() >= shortLimit) {
+                    // short filled.
+                    scanIoRequest(shortFull);
                 }
             }
 

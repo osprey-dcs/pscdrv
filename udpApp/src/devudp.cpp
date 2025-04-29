@@ -162,6 +162,15 @@ long devudp_set_shortLimit(longoutRecord *prec)
     }CATCH(devudp_get_record, prec);
 }
 
+long devudp_set_shortLimitAutoExpand(boRecord *prec)
+{
+    TRY {
+        Guard G(dev->lock);
+        dev->shortLimitAutoExpand = prec->val;
+        return 0;
+    }CATCH(devudp_set_shortLimitAutoExpand, prec);
+}
+
 template<const std::string UDPFast::*STR>
 long devudp_get_string(lsiRecord* prec)
 {
@@ -330,7 +339,7 @@ long devudp_read_shortbuf_U32(aaiRecord* prec)
             (void)recGblSetSevr(prec, READ_ALARM, INVALID_ALARM);
         }
 
-        if(priv->psc->shortLimit < prec->nelm) {
+        if(priv->psc->shortLimitAutoExpand && priv->psc->shortLimit < prec->nelm) {
             // automatically expand
             priv->psc->shortLimit = prec->nelm;
         }
@@ -434,7 +443,11 @@ long devudp_read_shortbuf_I24_packed(aaiRecord* prec)
 
         prec->nord = Iout;
 
-        if(priv->psc->shortBuf.size() >= priv->psc->shortLimit && Iout < Nout && !skips) {
+        if(priv->psc->shortLimitAutoExpand
+                && priv->psc->shortBuf.size() >= priv->psc->shortLimit
+                && Iout < Nout
+                && !skips)
+        {
             // short buf. filled, but this record had space remaining.
             // increase short buf limit for the next iteration.
             // iff no other packet t
@@ -457,6 +470,7 @@ MAKEDSET(bo, devPSCUDPReopenBO, &devudp_init_record_out, 0, &devudp_reopen);
 MAKEDSET(bo, devPSCUDPRecordBO, &devudp_init_record_out, 0, &devudp_set_record);
 MAKEDSET(bi, devPSCUDPRecordBI, &devudp_init_record_in, 0, &devudp_get_record);
 MAKEDSET(longout, devPSCUDPShortLimitLO, &devudp_init_record_out, 0, &devudp_set_shortLimit);
+MAKEDSET(bo, devPSCUDPShortLimitExpandBO, &devudp_init_record_out, 0, &devudp_set_shortLimitAutoExpand);
 MAKEDSET(lsi, devPSCUDPFilenameLSI, &devudp_init_record_in, 0, &devudp_get_string<&UDPFast::lastfile>);
 MAKEDSET(lsi, devPSCUDPErrorLSI, &devudp_init_record_in, 0, &devudp_get_string<&UDPFast::lasterror>);
 MAKEDSET(ai, devPSCUDPvpoolAI, &devudp_init_record_in, 0, &devudp_get_vpool);
@@ -485,6 +499,7 @@ epicsExportAddress(dset, devPSCUDPReopenBO);
 epicsExportAddress(dset, devPSCUDPRecordBO);
 epicsExportAddress(dset, devPSCUDPRecordBI);
 epicsExportAddress(dset, devPSCUDPShortLimitLO);
+epicsExportAddress(dset, devPSCUDPShortLimitExpandBO);
 epicsExportAddress(dset, devPSCUDPFilenameLSI);
 epicsExportAddress(dset, devPSCUDPErrorLSI);
 epicsExportAddress(dset, devPSCUDPvpoolAI);
