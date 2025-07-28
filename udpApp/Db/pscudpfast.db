@@ -138,7 +138,7 @@ record(ai, "$(P)PFree-I") {
     field(ASLO, "100")
     field(EGU , "%")
     field(HOPR, "100")
-    field(MDEL, "1")
+    field(ADEL, "1")
     field(TSEL, "$(P)FItvl-I_.TIME")
     field(FLNK, "$(P)PRXe-I")
 }
@@ -150,7 +150,7 @@ record(ai, "$(P)PRXe-I") {
     field(ASLO, "100")
     field(EGU , "%")
     field(HOPR, "100")
-    field(MDEL, "1")
+    field(ADEL, "1")
     field(TSEL, "$(P)FItvl-I_.TIME")
     field(FLNK, "$(P)PWrt-I")
 }
@@ -162,7 +162,7 @@ record(ai, "$(P)PWrt-I") {
     field(ASLO, "100")
     field(EGU , "%")
     field(HOPR, "100")
-    field(MDEL, "1")
+    field(ADEL, "1")
     field(TSEL, "$(P)FItvl-I_.TIME")
     field(FLNK, "$(P)RXBRate-I")
 }
@@ -174,7 +174,7 @@ record(calc, "$(P)RXBRate-I") {
     field(CALC, "C:=A-B;B:=A;C/D/E")
     field(EGU , "MB/s")
     field(PREC, "3")
-    field(MDEL, "2")
+    field(ADEL, "2")
     field(TSEL, "$(P)FItvl-I_.TIME")
     field(FLNK, "$(P)RXRate-I")
 }
@@ -194,7 +194,7 @@ record(calc, "$(P)RXRate-I") {
     field(CALC, "C:=A-B;B:=A;C/D/E")
     field(EGU , "kHz")
     field(PREC, "3")
-    field(MDEL, "1")
+    field(ADEL, "1")
     field(TSEL, "$(P)FItvl-I_.TIME")
     field(FLNK, "$(P)WrtRate-I")
 }
@@ -213,7 +213,7 @@ record(calc, "$(P)WrtRate-I") {
     field(INPE, "$(P)FItvl-I_ NPP")
     field(CALC, "C:=A-B;B:=A;C/D/E")
     field(EGU , "MB/s")
-    field(MDEL, "2")
+    field(ADEL, "2")
     field(TSEL, "$(P)FItvl-I_.TIME")
     field(FLNK, "$(P)NooM-I")
 }
