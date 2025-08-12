@@ -18,6 +18,16 @@ record(lso, "$(P)FileDir-SP") {
     info(autosaveFields_pass0, "VAL")
 }
 
+record(longout, "$(P)FileLim-SP") {
+    field(DESC, "Limit on dat file size")
+    field(DTYP, "PSCUDPFast File Limit")
+    field(OUT , "@$(NAME)")
+    field(EGU , "MB")
+    field(VAL , "$(FILELIMIT=0)")
+    field(PINI, "YES")
+    info(autosaveFields_pass0, "VAL")
+}
+
 record(bo, "$(P)Reopen-Cmd") {
     field(DESC, "Switch to new file")
     field(DTYP, "PSCUDPFast reopen")

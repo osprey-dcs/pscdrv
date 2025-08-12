@@ -5,6 +5,8 @@
 * in file LICENSE that is included with this distribution.
 \*************************************************************************/
 
+#include <algorithm>
+
 #include <epicsString.h>
 #include <epicsAtomic.h>
 
@@ -114,6 +116,19 @@ long devudp_set_string(lsoRecord* prec)
 
         return 0;
     }CATCH(devudp_set_string, prec);
+}
+
+long devudp_set_filelimit(longoutRecord* prec)
+{
+    TRY {
+        size_t lim = std::max(0, prec->val);
+        lim <<= 20u; // VAL in units of MB
+
+        Guard G(dev->lock);
+        dev->filelimit = lim;
+
+        return 0;
+    }CATCH(devudp_set_filelimit, prec);
 }
 
 long devudp_reopen(boRecord* prec)
@@ -485,6 +500,7 @@ MAKEDSET(int64in, devPSCUDPnrxI64I, &devudp_init_record_in, 0, &devudp_get_count
 MAKEDSET(int64in, devPSCUDPntimeoutI64I, &devudp_init_record_in, 0, &devudp_get_counter<&UDPFast::ntimeout>);
 MAKEDSET(int64in, devPSCUDPnoomI64I, &devudp_init_record_in, 0, &devudp_get_counter<&UDPFast::noom>);
 MAKEDSET(longin, devPSCUDPShortClearLI, &devudp_init_record_in, 0, &devudp_clear_shortbuf);
+MAKEDSET(longout, devPSCUDPFileLimLO, &devudp_init_record_out, 0, &devudp_set_filelimit);
 MAKEDSET(aai, devPSCUDPShortGetAAI, &devudp_init_record_shortbuf, 0, &devudp_read_shortbuf_U32);
 MAKEDSET(aai, devPSCUDPShortGetI24AAI, &devudp_init_record_shortbuf, 0, &devudp_read_shortbuf_I24_packed);
 
@@ -514,6 +530,7 @@ epicsExportAddress(dset, devPSCUDPnrxI64I);
 epicsExportAddress(dset, devPSCUDPntimeoutI64I);
 epicsExportAddress(dset, devPSCUDPnoomI64I);
 epicsExportAddress(dset, devPSCUDPShortClearLI);
+epicsExportAddress(dset, devPSCUDPFileLimLO);
 epicsExportAddress(dset, devPSCUDPShortGetAAI);
 epicsExportAddress(dset, devPSCUDPShortGetI24AAI);
 }

@@ -149,6 +149,7 @@ UDPFast::UDPFast(const std::string& name,
     ,lastsize(0u)
     ,netrx(0u)
     ,storewrote(0u)
+    ,filelimit(0u)
     ,reopen(true)
     ,record(false)
     ,shortLimit(0u)
@@ -580,10 +581,20 @@ void UDPFast::cachefn()
         if(inprog.empty())
             continue;
 
-        if(datafile.isOpen() && filetotal>=size_t(PSCUDPMaxLenMB*(1u<<20u))) {
-            reopen = true;
-            if(PSCDebug>=2)
-                errlogPrintf("%s : rotate data file for size=%zu\n", name.c_str(), size_t(filetotal));
+        {
+            size_t rotate_at = 0u; // in MB
+
+            if(PSCUDPMaxLenMB)
+                rotate_at = PSCUDPMaxLenMB;
+
+            if(filelimit && filelimit<rotate_at)
+                rotate_at = filelimit;
+
+            if(datafile.isOpen() && rotate_at>=0 && filetotal>=size_t(rotate_at)*(1u<<20u)) {
+                reopen = true;
+                if(PSCDebug>=2)
+                    errlogPrintf("%s : rotate data file for size=%zu\n", name.c_str(), size_t(filetotal));
+            }
         }
 
         int fileerr = 0;
@@ -833,6 +844,14 @@ bool report1(int lvl, const PSCBase* base)
             shortLimit = drv->shortLimit;
         }
         printf("  short %zu/%zu\n", shortLen, shortLimit);
+    }
+    if(lvl>0) {
+        size_t filelimit;
+        {
+            Guard G(drv->lock);
+            filelimit = drv->filelimit;
+        }
+        printf("  filelimit %zu\n", filelimit);
     }
 
     return true;

@@ -63,6 +63,7 @@ struct UDPFast : public PSCBase
     std::string filedir, filebase;
     std::string lastfile;
     std::string lasterror;
+    size_t filelimit;
     bool reopen;
     bool record;
 
