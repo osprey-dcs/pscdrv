@@ -1,4 +1,4 @@
-#!./pscdrv/bin/linux-x86_64/pscdemo
+#!../../bin/linux-x86_64/pscdemo
 
 ## You may have to change psc to something else
 ## everywhere it appears in this file
