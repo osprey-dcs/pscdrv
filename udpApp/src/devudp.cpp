@@ -151,8 +151,7 @@ long devudp_set_record(boRecord* prec)
             dev->record = prec->val;
             dev->reopen = dev->record;
         }
-        if(prec->val)
-            dev->pendingReady.signal();
+        dev->pendingReady.signal();
         return 0;
     }CATCH(devudp_set_record, prec);
 }

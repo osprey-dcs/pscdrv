@@ -599,6 +599,15 @@ void UDPFast::cachefn()
 
         int fileerr = 0;
 
+        if((!record || reopen) && datafile.isOpen()) {
+            UnGuard U(G);
+
+            timeclose.start();
+            datafile.close();
+            timeclose.stop();
+
+        }
+
         if(record && reopen && !filebase.empty()) { // open new file
             reopen = false;
             filetotal = 0u;
@@ -618,10 +627,6 @@ void UDPFast::cachefn()
 
             namestrm << tsbuf << ".dat";
             std::string fname = namestrm.str();
-
-            timeclose.start();
-            datafile.close();
-            timeclose.stop();
 
             timeopen.start();
             datafile.fd = ::open(fname.c_str(), O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC, 0644);
