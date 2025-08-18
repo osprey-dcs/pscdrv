@@ -577,11 +577,7 @@ void UDPFast::cachefn()
             }
         }
 
-
-        if(inprog.empty())
-            continue;
-
-        {
+        if(datafile.isOpen()) {
             size_t rotate_at = 0u; // in MB
 
             if(PSCUDPMaxLenMB)
@@ -590,12 +586,24 @@ void UDPFast::cachefn()
             if(filelimit && filelimit<rotate_at)
                 rotate_at = filelimit;
 
-            if(datafile.isOpen() && rotate_at>=0 && filetotal>=size_t(rotate_at)*(1u<<20u)) {
+            if(rotate_at && filetotal>=size_t(rotate_at)*(1u<<20u)) {
                 reopen = true;
                 if(PSCDebug>=2)
                     errlogPrintf("%s : rotate data file for size=%zu\n", name.c_str(), size_t(filetotal));
             }
         }
+
+        if((!record || reopen) && datafile.isOpen()) {
+            UnGuard U(G);
+
+            timeclose.start();
+            datafile.close();
+            timeclose.stop();
+
+        }
+
+        if(inprog.empty())
+            continue;
 
         int fileerr = 0;
 
@@ -618,10 +626,6 @@ void UDPFast::cachefn()
 
             namestrm << tsbuf << ".dat";
             std::string fname = namestrm.str();
-
-            timeclose.start();
-            datafile.close();
-            timeclose.stop();
 
             timeopen.start();
             datafile.fd = ::open(fname.c_str(), O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC, 0644);
