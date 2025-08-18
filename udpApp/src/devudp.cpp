@@ -121,11 +121,13 @@ long devudp_set_string(lsoRecord* prec)
 long devudp_set_filelimit(longoutRecord* prec)
 {
     TRY {
-        size_t lim = std::max(0, prec->val);
-        lim <<= 20u; // VAL in units of MB
-
         Guard G(dev->lock);
-        dev->filelimit = lim;
+        if(!dev->record && prec->val>=0) {
+            dev->filelimit = size_t(prec->val)<<20u; // VAL in units of MB
+        } else {
+            recGblSetSevr(prec, STATE_ALARM, INVALID_ALARM);
+        }
+        prec->val = dev->filelimit>>20u;
 
         return 0;
     }CATCH(devudp_set_filelimit, prec);
