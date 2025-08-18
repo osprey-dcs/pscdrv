@@ -578,15 +578,15 @@ void UDPFast::cachefn()
         }
 
         if(datafile.isOpen()) {
-            size_t rotate_at = 0u; // in MB
+            size_t rotate_at = 0u;
 
             if(PSCUDPMaxLenMB)
-                rotate_at = PSCUDPMaxLenMB;
+                rotate_at = PSCUDPMaxLenMB*(1u<<20u);
 
             if(filelimit && filelimit<rotate_at)
                 rotate_at = filelimit;
 
-            if(rotate_at && filetotal>=size_t(rotate_at)*(1u<<20u)) {
+            if(rotate_at && filetotal>=rotate_at) {
                 reopen = true;
                 if(PSCDebug>=2)
                     errlogPrintf("%s : rotate data file for size=%zu\n", name.c_str(), size_t(filetotal));
