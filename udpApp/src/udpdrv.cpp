@@ -577,11 +577,7 @@ void UDPFast::cachefn()
             }
         }
 
-
-        if(inprog.empty())
-            continue;
-
-        {
+        if(datafile.isOpen()) {
             size_t rotate_at = 0u; // in MB
 
             if(PSCUDPMaxLenMB)
@@ -590,14 +586,12 @@ void UDPFast::cachefn()
             if(filelimit && filelimit<rotate_at)
                 rotate_at = filelimit;
 
-            if(datafile.isOpen() && rotate_at>=0 && filetotal>=size_t(rotate_at)*(1u<<20u)) {
+            if(rotate_at && filetotal>=size_t(rotate_at)*(1u<<20u)) {
                 reopen = true;
                 if(PSCDebug>=2)
                     errlogPrintf("%s : rotate data file for size=%zu\n", name.c_str(), size_t(filetotal));
             }
         }
-
-        int fileerr = 0;
 
         if((!record || reopen) && datafile.isOpen()) {
             UnGuard U(G);
@@ -607,6 +601,11 @@ void UDPFast::cachefn()
             timeclose.stop();
 
         }
+
+        if(inprog.empty())
+            continue;
+
+        int fileerr = 0;
 
         if(record && reopen && !filebase.empty()) { // open new file
             reopen = false;
