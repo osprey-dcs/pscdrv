@@ -119,17 +119,18 @@ I analogEGU2Raw(R* prec, F v)
     return (I)v;
 }
 
-class PSC_API RecInfo
-{
-    DBENTRY ent;
-public:
-    RecInfo(const char* recname);
-    RecInfo(dbCommon *prec);
-    ~RecInfo();
-    const char* get(const char* iname);
-};
-
 namespace detail {
+
+    class PSC_API RecInfo
+    {
+        DBENTRY ent;
+    public:
+        RecInfo(const char* recname);
+        RecInfo(dbCommon *prec);
+        ~RecInfo();
+        const char* get(const char* iname);
+    };
+
     template<int L> struct nswap {};
     template<> struct nswap<1> {
         typedef epicsInt8 type;
@@ -164,6 +165,7 @@ namespace detail {
         T O;
     };
 }
+using detail::RecInfo;
 
 template<typename T>
 T hton(T in)
