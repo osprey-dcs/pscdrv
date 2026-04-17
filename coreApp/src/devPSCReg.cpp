@@ -88,7 +88,7 @@ long init_rb(R* prec)
     return 0;
 }
 
-template<typename R>
+template<typename R, long RVAL=0>
 long init_output(R* prec)
 {
     assert(prec->out.type==INST_IO);
@@ -101,7 +101,7 @@ long init_output(R* prec)
         prec->dpvt = (void*)priv.release();
 
     }CATCH(init_output, prec)
-    return 0;
+    return RVAL;
 }
 
 long get_iointr_info(int cmd, dbCommon *prec, IOSCANPVT *io)
@@ -327,8 +327,8 @@ MAKEDSET(longout, devPSCRegLo, &init_output<longoutRecord>, NULL, &write_from_va
   MAKEDSET(int64out, devPSCRegI64o, &init_output<int64outRecord>, NULL, &write_from_val<int64outRecord>);
 #endif
 MAKEDSET(ao, devPSCRegAo, &init_output<aoRecord>, NULL, &write_ao);
-MAKEDSET(ao, devPSCRegF32Ao, &init_output<aoRecord>, NULL, &write_ao_float<float>);
-MAKEDSET(ao, devPSCRegF64Ao, &init_output<aoRecord>, NULL, &write_ao_float<double>);
+MAKEDSET(ao, devPSCRegF32Ao, (&init_output<aoRecord, 2>), NULL, &write_ao_float<float>);
+MAKEDSET(ao, devPSCRegF64Ao, (&init_output<aoRecord, 2>), NULL, &write_ao_float<double>);
 
 } // namespace
 
