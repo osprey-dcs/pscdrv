@@ -229,7 +229,16 @@ void PSC::eventcb(short events)
         } else
             msg = "Connection closed by PSC";
 
+        bool wasconn = connected;
         start_reconnect();
+
+        if(wasconn) {
+            // notify of disconnect
+            for(block_map::iterator it = recv_blocks.begin(), end = recv_blocks.end();
+                 it!=end; ++it) {
+                it->second->requestScan();
+            }
+        }
 
         message = msg;
     } else {
